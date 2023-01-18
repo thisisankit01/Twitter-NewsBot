@@ -75,14 +75,11 @@ function completionCall(prompt) {
         return mainData;
     });
 }
-///////////////////////////integrating openai and blog with raw data////////////////////////////
-//  const tweetToBeSent = completionCall(`create a tweet for this news predicting its future scope - ${blog}`);
-//  console.log(tweetToBeSent);
 //////////////////////////////Tweet Function//////////////////////////////////
 function tweet() {
     return __awaiter(this, void 0, void 0, function* () {
         // call completionCall to get the tweet text
-        const tweetText = yield completionCall(`create a tweet for this news predicting its future scope - ${blog}`);
+        const tweetText = yield completionCall(`write a tweet for this news predicting its future scope in 270 character limit : ${blog}`);
         // post the tweet
         credentials.post('statuses/update', { status: tweetText }, function (err, data, response) {
             if (err) {

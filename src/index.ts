@@ -86,7 +86,7 @@ async function completionCall(prompt : any): Promise<string> {
 //////////////////////////////Tweet Function//////////////////////////////////
 async function tweet() {
   // call completionCall to get the tweet text
-  const tweetText = await completionCall(`create a tweet for this news predicting its future scope - ${blog}`);
+  const tweetText = await completionCall(`write a tweet for this news predicting its future scope in 270 character limit : ${blog}`);
 
   // post the tweet
   credentials.post('statuses/update', { status: tweetText }, function(err, data, response) {
