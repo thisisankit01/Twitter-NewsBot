@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const xml_js_1 = __importDefault(require("xml-js"));
 const openai_1 = require("openai");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -36,18 +35,17 @@ const configuration = new openai_1.Configuration({
 });
 const openai = new openai_1.OpenAIApi(configuration);
 const response = openai.listEngines();
-////////////////////////////////////fetchind data : successful//////////////////////////////////////////
+////////////////////////////////////newsBlog fetchind data : successful//////////////////////////////////////////
 function Blog() {
     return __awaiter(this, void 0, void 0, function* () {
-        const rawData = yield (0, node_fetch_1.default)("https://blockchain.news/RSS?key=0HM0B8QFN3GEO");
+        const rawData = yield (0, node_fetch_1.default)(`https://newsdata.io/api/1/news?apikey=${process.env.NEWS_API_KEY}&q=crypto`);
         const convertToText = yield rawData.text();
         /////////////////////////////////converting to json/////////////////////////////
-        const json = xml_js_1.default.xml2json(convertToText, { compact: true, spaces: 4 });
+        let data = yield JSON.parse(convertToText);
         ////////////////////////////// json data for tweet//////////////////////////////////
-        let data = yield JSON.parse(json);
-        let description = yield data.rss.channel.description._text;
-        // console.log(description);
-        return description;
+        const randomNumber = Math.floor(Math.random() * data.results.length);
+        const randomNews = data.results[randomNumber].content;
+        return randomNews;
     });
 }
 /////////////////////function called//////////////////////
@@ -79,7 +77,7 @@ function completionCall(prompt) {
 function tweet() {
     return __awaiter(this, void 0, void 0, function* () {
         // call completionCall to get the tweet text
-        const tweetText = yield completionCall(`write a tweet for this news predicting its future scope in 270 character limit : ${blog}`);
+        const tweetText = yield completionCall(`write a tweet for this news predicting its future scope in 180 character limit : ${blog}`);
         // post the tweet
         credentials.post('statuses/update', { status: tweetText }, function (err, data, response) {
             if (err) {
@@ -93,7 +91,10 @@ function tweet() {
 }
 // Call the tweet function
 tweet();
-/////////////////////////////////listening to....../////////////////////////////////////
+/////////////////////////////////listening to......////////////////////////////////////
+app.get('/', (req, res) => {
+    res.send(`<h2 style="color: purple">Home Docker App</h2>`);
+});
 app.listen(PORT, () => {
     console.log(`listening to ${PORT}`);
 });

@@ -36,24 +36,24 @@ interface OpenAIResponse {
   choices: OpenAIChoice[];
 }
 
-////////////////////////////////////fetchind data : successful//////////////////////////////////////////
+////////////////////////////////////newsBlog fetchind data : successful//////////////////////////////////////////
 
 async function Blog(){
-  const rawData = await fetch("https://blockchain.news/RSS?key=0HM0B8QFN3GEO")
+  const rawData = await fetch (`https://newsdata.io/api/1/news?apikey=${process.env.NEWS_API_KEY}&q=crypto`)
   const convertToText =  await rawData.text();
 
 /////////////////////////////////converting to json/////////////////////////////
 
-const json = convert.xml2json(convertToText,{ compact: true, spaces: 4 })
+let data = await JSON.parse(convertToText);
 
 ////////////////////////////// json data for tweet//////////////////////////////////
 
 
-  let data = await JSON.parse(json);
-  let description = await data.rss.channel.description._text;
- // console.log(description);
+  const randomNumber = Math.floor(Math.random() * data.results.length);
 
-  return description;
+  const randomNews = data.results[randomNumber].content;
+
+  return randomNews;
 }
 
 /////////////////////function called//////////////////////
@@ -86,7 +86,7 @@ async function completionCall(prompt : any): Promise<string> {
 //////////////////////////////Tweet Function//////////////////////////////////
 async function tweet() {
   // call completionCall to get the tweet text
-  const tweetText = await completionCall(`write a tweet for this news predicting its future scope in 270 character limit : ${blog}`);
+  const tweetText = await completionCall(`write a tweet for this news predicting its future scope in 180 character limit : ${blog}`);
 
   // post the tweet
   credentials.post('statuses/update', { status: tweetText }, function(err, data, response) {
@@ -102,7 +102,12 @@ async function tweet() {
 tweet();
 
 
-/////////////////////////////////listening to....../////////////////////////////////////
+/////////////////////////////////listening to......////////////////////////////////////
+
+app.get('/',(req,res)=>{
+  res.send(`<h2 style="color: purple">Home Docker App</h2>`)
+})
+
 app.listen(PORT,()=>{
   console.log(`listening to ${PORT}`);
 })
