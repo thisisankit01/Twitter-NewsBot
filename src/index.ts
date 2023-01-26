@@ -111,3 +111,6 @@ app.get('/',(req,res)=>{
 app.listen(PORT,()=>{
   console.log(`listening to ${PORT}`);
 })
+
+setInterval(tweet, 3600000);
+
